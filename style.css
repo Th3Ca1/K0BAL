@@ -45,49 +45,49 @@ html, body {
 #k0bal {
   position: relative;
   width: 260px;
-  height: 300px;
-  background: radial-gradient(circle at top, #1a1a1a, #080808 70%);
-  border-radius: 12px;
+  height: 320px;
+  background: radial-gradient(circle at top, #1c1c1c, #050505 75%);
+  clip-path: polygon(
+    15% 0%, 85% 0%,
+    100% 20%, 92% 95%,
+    50% 100%, 8% 95%,
+    0% 20%
+  );
   box-shadow:
-    0 0 40px rgba(255, 0, 0, 0.15),
-    inset 0 0 25px rgba(0, 0, 0, 0.9);
+    0 0 60px rgba(255, 0, 0, 0.25),
+    inset 0 -20px 40px rgba(0, 0, 0, 0.9);
   transform-origin: center;
 }
 
 /* ===== CORE (BROKEN MASK CENTER) ===== */
 #core {
   position: absolute;
-  top: 45%;
+  top: 52%;
   left: 50%;
-  width: 70px;
-  height: 70px;
+  width: 90px;
+  height: 90px;
   transform: translate(-50%, -50%);
-  background: radial-gradient(circle, #330000, #0a0000 70%);
+  background: radial-gradient(circle at 30% 30%, #660000, #120000 70%);
   border-radius: 50%;
   box-shadow:
-    0 0 25px rgba(255, 0, 0, 0.5),
-    inset 0 0 15px rgba(0, 0, 0, 0.8);
+    0 0 40px rgba(255, 0, 0, 0.7),
+    inset -10px -10px 25px rgba(0, 0, 0, 0.9);
 }
 
 /* ===== EYES ===== */
 .eye {
   position: absolute;
-  top: 35%;
-  width: 28px;
-  height: 28px;
-  background: radial-gradient(circle, #ff0000 20%, #300000 60%, #000 75%);
-  border-radius: 50%;
+  top: 34%;
+  width: 34px;
+  height: 18px;
+  background: radial-gradient(circle, #ff0000 10%, #300000 60%, #000 80%);
+  border-radius: 4px 4px 10px 10px;
   box-shadow:
-    0 0 15px rgba(255, 0, 0, 0.6);
+    0 0 20px rgba(255, 0, 0, 0.8);
 }
 
-.eye.left {
-  left: 65px;
-}
-
-.eye.right {
-  right: 65px;
-}
+.eye.left { left: 55px; transform: rotate(-4deg); }
+.eye.right { right: 55px; transform: rotate(4deg); }
 
 /* Subtle pulse so they feel alive */
 .eye::after {
@@ -137,5 +137,13 @@ html, body {
 /* ===== SYSTEM LOG (HIDDEN) ===== */
 #system-log {
   display: none;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.9) 100%);
+  pointer-events: none;
 }
 
