@@ -1,109 +1,55 @@
-const k0bal = document.getElementById("k0bal");
-const eyeGlows = document.querySelectorAll(".eye-glow");
-
-let leashStrength = 0.06;   // resistance
-let maxRotate = 5;         // restrained movement
-let panicRadius = 90;
-let anger = 0;
-
-// =======================
-// MOUSE TRACKING
-// =======================
-document.addEventListener("mousemove", (e) => {
-  const rect = k0bal.getBoundingClientRect();
-  const centerX = rect.left + rect.width / 2;
-  const centerY = rect.top + rect.height / 2;
-
-  const dx = e.clientX - centerX;
-  const dy = e.clientY - centerY;
-  const distance = Math.hypot(dx, dy);
-
-  // Leashed rotation (body resists)
-  const rotX = Math.max(-maxRotate, Math.min(maxRotate, dx * leashStrength));
-  const rotY = Math.max(-maxRotate, Math.min(maxRotate, dy * leashStrength));
-
-  k0bal.style.transform = `
-    rotateX(${-rotY}deg)
-    rotateY(${rotX}deg)
-  `;
-
-  // Eye glow follows harder (thing inside watches)
-  eyeGlows.forEach((glow, i) => {
-    const lag = i === 0 ? 0.6 : 1.3;
-    const ex = Math.max(-10, Math.min(10, dx * 0.02 * lag));
-    const ey = Math.max(-6, Math.min(6, dy * 0.02 * lag));
-    glow.style.transform = `translate(${ex}px, ${ey}px)`;
-  });
-
-  // Too close = agitation
-  if (distance < panicRadius) {
-    k0bal.style.filter = "contrast(125%) brightness(90%)";
-    twitch();
-  } else {
-    k0bal.style.filter = "";
-  }
-});
-
-// =======================
-// CLICK = AGGRESSION
-// =======================
-document.addEventListener("mousedown", () => {
-  anger++;
-
-  const shake = Math.min(10 + anger, 20);
-
-  k0bal.animate([
-    { transform: "translate(0,0)" },
-    { transform: `translate(${shake}px, -${shake}px)` },
-    { transform: `translate(-${shake}px, ${shake}px)` },
-    { transform: "translate(0,0)" }
-  ], {
-    duration: 140,
-    iterations: 1
-  });
-
-  glitchPulse();
-});
-
-// =======================
-// MICRO TWITCH
-// =======================
-function twitch() {
-  k0bal.style.animation = "none";
-  k0bal.offsetHeight; // reflow
-  k0bal.style.animation = "";
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #0a0a0a;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  perspective: 1000px;
 }
 
-// =======================
-// SCREEN GLITCH
-// =======================
-function glitchPulse() {
-  document.body.style.filter = "hue-rotate(12deg) saturate(140%)";
-  setTimeout(() => {
-    document.body.style.filter = "";
-  }, 80);
+#k0bal {
+  position: relative;
+  width: 200px;
+  height: 260px;
+  background: #111;
+  border-radius: 40% 40% 50% 50%;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+  transition: filter 0.1s ease;
 }
 
-// =======================
-// AUTONOMOUS EYE RESET
-// (feels like refocusing)
-// =======================
-setInterval(() => {
-  eyeGlows.forEach(glow => {
-    glow.animate([
-      { transform: glow.style.transform },
-      { transform: "translate(0,0)" }
-    ], {
-      duration: 260,
-      iterations: 1
-    });
-  });
-}, 4500 + Math.random() * 4000);
+#mask {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 40%, #1a1a1a, #000);
+  border-radius: inherit;
+  z-index: 1;
+}
 
-// =======================
-// ARG CONSOLE CORRUPTION
-// =======================
-setInterval(() => {
-  const garbage = Math.random().toString(36).slice(2);
-  console.log(garbage.repeat(2).slice(0, 26));
-}, 5000);
+.eye-socket {
+  position: absolute;
+  top: 35%;
+  width: 50px;
+  height: 30px;
+  background: #000;
+  border-radius: 50%;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.left { left: 20%; }
+.right { right: 20%; }
+
+.eye-glow {
+  position: absolute;
+  top: 25%;
+  left: 30%;
+  width: 15px;
+  height: 15px;
+  background: radial-gradient(circle, #ff0000 0%, #8b0000 70%, transparent 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 15px #ff0000;
+}
