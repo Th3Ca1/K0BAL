@@ -32,94 +32,93 @@ html, body {
   100% { transform: translate(1px, 1px); }
 }
 
-/* ===== CONTAINMENT SPACE ===== */
-#containment {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+#k0bal {
+  position: relative;
+  width: 320px;
+  height: 360px;
+  filter: drop-shadow(0 0 40px rgba(255,0,0,0.15));
 }
 
 /* ===== K0BAL ENTITY ===== */
-#k0bal {
-  position: relative;
-  width: 260px;
-  height: 320px;
-  background: radial-gradient(circle at top, #1c1c1c, #050505 75%);
+#mask {
+  position: absolute;
+  inset: 0;
+  background: #050505;
   clip-path: polygon(
-    15% 0%, 85% 0%,
-    100% 20%, 92% 95%,
-    50% 100%, 8% 95%,
-    0% 20%
+    50% 0%,
+    63% 5%, 78% 10%, 90% 22%,
+    96% 40%, 92% 60%, 80% 75%,
+    65% 90%, 50% 100%,
+    35% 90%, 20% 75%, 8% 60%,
+    4% 40%, 10% 22%, 22% 10%, 37% 5%
   );
   box-shadow:
-    0 0 60px rgba(255, 0, 0, 0.25),
-    inset 0 -20px 40px rgba(0, 0, 0, 0.9);
-  transform-origin: center;
+    inset 0 -40px 60px rgba(0,0,0,0.9),
+    inset 0 10px 30px rgba(255,255,255,0.02);
 }
 
-/* ===== CORE (BROKEN MASK CENTER) ===== */
-#core {
-  position: absolute;
-  top: 52%;
-  left: 50%;
-  width: 90px;
-  height: 90px;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(circle at 30% 30%, #660000, #120000 70%);
-  border-radius: 50%;
-  box-shadow:
-    0 0 40px rgba(255, 0, 0, 0.7),
-    inset -10px -10px 25px rgba(0, 0, 0, 0.9);
-}
-
-/* ===== EYES ===== */
-.eye {
-  position: absolute;
-  top: 34%;
-  width: 34px;
-  height: 18px;
-  background: radial-gradient(circle, #ff0000 10%, #300000 60%, #000 80%);
-  border-radius: 4px 4px 10px 10px;
-  box-shadow:
-    0 0 20px rgba(255, 0, 0, 0.8);
-}
-
-.eye.left { left: 55px; transform: rotate(-4deg); }
-.eye.right { right: 55px; transform: rotate(4deg); }
-
-/* Subtle pulse so they feel alive */
-.eye::after {
+#mask::before,
+#mask::after {
   content: "";
   position: absolute;
-  inset: 6px;
-  background: rgba(0, 0, 0, 0.8);
-  border-radius: 50%;
+  top: 50%;
+  width: 40px;
+  height: 120px;
+  background: #040404;
+  clip-path: polygon(0 50%, 100% 0, 100% 100%);
+  opacity: 0.9;
 }
 
-/* ===== CRACKS / DAMAGE ===== */
-.crack {
-  position: absolute;
-  background: linear-gradient(to bottom, #220000, transparent);
-  opacity: 0.6;
-}
-
-.crack.c1 {
-  width: 3px;
-  height: 90px;
-  top: 20px;
-  left: 120px;
+#mask::before {
+  left: -32px;
   transform: rotate(-15deg);
 }
 
-.crack.c2 {
-  width: 2px;
-  height: 70px;
-  bottom: 30px;
-  right: 90px;
-  transform: rotate(20deg);
+#mask::after {
+  right: -32px;
+  transform: rotate(195deg);
 }
+
+.eye-socket {
+  position: absolute;
+  top: 42%;
+  width: 54px;
+  height: 32px;
+  background: #000;
+  clip-path: polygon(
+    0% 0%, 100% 10%,
+    90% 100%, 10% 90%
+  );
+  overflow: hidden;
+}
+
+.eye-socket.left { left: 72px; transform: rotate(-6deg); }
+.eye-socket.right { right: 72px; transform: rotate(6deg); }
+
+.eye-glow {
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(
+    circle,
+    rgba(255,0,0,0.8) 0%,
+    rgba(120,0,0,0.6) 25%,
+    rgba(40,0,0,0.4) 45%,
+    rgba(0,0,0,0.95) 70%
+  );
+  animation: pulseEye 2.4s infinite ease-in-out;
+  mix-blend-mode: screen;
+}
+
+.eye-socket.right .eye-glow {
+  animation-delay: 0.6s;
+}
+
+@keyframes pulseEye {
+  0%   { transform: scale(0.85); opacity: 0.6; }
+  50%  { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.7; }
+}
+
 
 /* ===== UNSETTLING MICRO-MOVEMENT ===== */
 #k0bal {
