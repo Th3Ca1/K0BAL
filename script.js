@@ -1,13 +1,14 @@
 const k0bal = document.getElementById("k0bal");
-const eyes = document.querySelectorAll(".eye");
-const core = document.getElementById("core");
+const eyeGlows = document.querySelectorAll(".eye-glow");
 
-let leashStrength = 0.08;   // how much K0BAL resists you
-let maxRotate = 6;         // degrees (keeps him restrained)
-let panicRadius = 90;      // distance where he flinches
-let anger = 0;             // builds when clicked
+let leashStrength = 0.06;   // resistance
+let maxRotate = 5;         // restrained movement
+let panicRadius = 90;
+let anger = 0;
 
-// Track mouse (your "face")
+// =======================
+// MOUSE TRACKING
+// =======================
 document.addEventListener("mousemove", (e) => {
   const rect = k0bal.getBoundingClientRect();
   const centerX = rect.left + rect.width / 2;
@@ -15,90 +16,94 @@ document.addEventListener("mousemove", (e) => {
 
   const dx = e.clientX - centerX;
   const dy = e.clientY - centerY;
-
   const distance = Math.hypot(dx, dy);
 
-  // Rotation (leashed)
-  const targetX = Math.max(-maxRotate, Math.min(maxRotate, dx * leashStrength));
-  const targetY = Math.max(-maxRotate, Math.min(maxRotate, dy * leashStrength));
+  // Leashed rotation (body resists)
+  const rotX = Math.max(-maxRotate, Math.min(maxRotate, dx * leashStrength));
+  const rotY = Math.max(-maxRotate, Math.min(maxRotate, dy * leashStrength));
 
   k0bal.style.transform = `
-    rotateX(${-targetY}deg)
-    rotateY(${targetX}deg)
+    rotateX(${-rotY}deg)
+    rotateY(${rotX}deg)
   `;
 
-  // Eyes track harder than body (blame stare)
-const eyeGlows = document.querySelectorAll(".eye-glow");
+  // Eye glow follows harder (thing inside watches)
+  eyeGlows.forEach((glow, i) => {
+    const lag = i === 0 ? 0.6 : 1.3;
+    const ex = Math.max(-10, Math.min(10, dx * 0.02 * lag));
+    const ey = Math.max(-6, Math.min(6, dy * 0.02 * lag));
+    glow.style.transform = `translate(${ex}px, ${ey}px)`;
+  });
 
-eyeGlows.forEach((glow, i) => {
-  const lag = i === 0 ? 0.6 : 1.3;
-  const ex = Math.max(-10, Math.min(10, dx * 0.02 * lag));
-  const ey = Math.max(-6, Math.min(6, dy * 0.02 * lag));
-  glow.style.transform = `translate(${ex}px, ${ey}px)`;
-});
-
-  // Too close = panic reaction
+  // Too close = agitation
   if (distance < panicRadius) {
-    k0bal.style.filter = "contrast(120%) brightness(90%)";
-    jitter();
+    k0bal.style.filter = "contrast(125%) brightness(90%)";
+    twitch();
   } else {
     k0bal.style.filter = "";
   }
 });
 
-// Click = pain / accusation
+// =======================
+// CLICK = AGGRESSION
+// =======================
 document.addEventListener("mousedown", () => {
   anger++;
 
-  const shake = 6 + anger;
+  const shake = Math.min(10 + anger, 20);
+
   k0bal.animate([
     { transform: "translate(0,0)" },
     { transform: `translate(${shake}px, -${shake}px)` },
     { transform: `translate(-${shake}px, ${shake}px)` },
     { transform: "translate(0,0)" }
   ], {
-    duration: 120,
+    duration: 140,
     iterations: 1
   });
-
-  core.style.boxShadow = `
-    0 0 ${20 + anger * 4}px rgba(255,0,0,0.9),
-    inset 0 0 20px rgba(0,0,0,0.9)
-  `;
 
   glitchPulse();
 });
 
-// Subtle involuntary twitch
-function jitter() {
+// =======================
+// MICRO TWITCH
+// =======================
+function twitch() {
   k0bal.style.animation = "none";
-  k0bal.offsetHeight; // force reflow
+  k0bal.offsetHeight; // reflow
   k0bal.style.animation = "";
 }
 
-// Screen-level glitch when abused
+// =======================
+// SCREEN GLITCH
+// =======================
 function glitchPulse() {
-  document.body.style.filter = "hue-rotate(10deg)";
+  document.body.style.filter = "hue-rotate(12deg) saturate(140%)";
   setTimeout(() => {
     document.body.style.filter = "";
-  }, 60);
+  }, 80);
 }
 
-// Occasional autonomous stare correction
+// =======================
+// AUTONOMOUS EYE RESET
+// (feels like refocusing)
+// =======================
 setInterval(() => {
-  eyes.forEach(eye => {
-    eye.animate([
-      { transform: eye.style.transform },
+  eyeGlows.forEach(glow => {
+    glow.animate([
+      { transform: glow.style.transform },
       { transform: "translate(0,0)" }
     ], {
-      duration: 300,
+      duration: 260,
       iterations: 1
     });
   });
-}, 4000 + Math.random() * 4000);
+}, 4500 + Math.random() * 4000);
 
-// Corrupted console output (ARG flavor)
+// =======================
+// ARG CONSOLE CORRUPTION
+// =======================
 setInterval(() => {
   const garbage = Math.random().toString(36).slice(2);
-  console.log(garbage.repeat(2).slice(0, 24));
+  console.log(garbage.repeat(2).slice(0, 26));
 }, 5000);
