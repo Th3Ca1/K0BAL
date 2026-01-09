@@ -1,4 +1,3 @@
-
 const k0bal = document.getElementById("k0bal");
 const eyeGlows = document.querySelectorAll(".eye-glow");
 
@@ -75,3 +74,4 @@ setInterval(() => {
 }, 4000);
 
 animate();
+``.
