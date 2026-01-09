@@ -28,11 +28,14 @@ document.addEventListener("mousemove", (e) => {
   `;
 
   // Eyes track harder than body (blame stare)
-  eyes.forEach(eye => {
-    const ex = Math.max(-6, Math.min(6, dx * 0.03));
-    const ey = Math.max(-6, Math.min(6, dy * 0.03));
-    eye.style.transform = `translate(${ex}px, ${ey}px)`;
-  });
+const eyeGlows = document.querySelectorAll(".eye-glow");
+
+eyeGlows.forEach((glow, i) => {
+  const lag = i === 0 ? 0.6 : 1.3;
+  const ex = Math.max(-10, Math.min(10, dx * 0.02 * lag));
+  const ey = Math.max(-6, Math.min(6, dy * 0.02 * lag));
+  glow.style.transform = `translate(${ex}px, ${ey}px)`;
+});
 
   // Too close = panic reaction
   if (distance < panicRadius) {
