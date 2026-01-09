@@ -1,148 +1,79 @@
-/* ===== GLOBAL RESET ===== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  cursor: crosshair;
+const k0bal = document.getElementById("k0bal");
+const eyes = document.querySelectorAll(".eye-glow");
+
+let targetX = window.innerWidth / 2;
+let targetY = window.innerHeight / 2;
+let currentX = targetX;
+let currentY = targetY;
+
+let agitation = 0;
+let glitching = false;
+
+document.addEventListener("mousemove", (e) => {
+  targetX = e.clientX;
+  targetY = e.clientY;
+
+  const centerX = window.innerWidth / 2;
+  const centerY = window.innerHeight / 2;
+
+  const dx = targetX - centerX;
+  const dy = targetY - centerY;
+  const distance = Math.hypot(dx, dy);
+
+  // Cursor too close = agitation rises
+  if (distance < 140) {
+    agitation = Math.min(1, agitation + 0.03);
+    triggerGlitch();
+  } else {
+    agitation = Math.max(0, agitation - 0.01);
+  }
+});
+
+function animate() {
+  // Slow, predatory tracking
+  currentX += (targetX - currentX) * 0.05;
+  currentY += (targetY - currentY) * 0.05;
+
+  const centerX = window.innerWidth / 2;
+  const centerY = window.innerHeight / 2;
+
+  const dx = currentX - centerX;
+  const dy = currentY - centerY;
+
+  const maxMove = 8 + agitation * 6;
+
+  const moveX = Math.max(-maxMove, Math.min(maxMove, dx / 45));
+  const moveY = Math.max(-maxMove, Math.min(maxMove, dy / 45));
+
+  eyes.forEach((eye, i) => {
+    const jitter = agitation * (Math.random() - 0.5) * 2;
+
+    eye.style.transform = `
+      translate(${moveX + jitter}px, ${moveY - jitter}px)
+      scale(${1 + agitation * 0.15})
+    `;
+  });
+
+  // Subtle blame-lean
+  k0bal.style.transform = `
+    translate(${moveX * 0.4}px, ${moveY * 0.4}px)
+    rotate(${moveX * 0.03}deg)
+  `;
+
+  requestAnimationFrame(animate);
 }
 
-html, body {
-  width: 100%;
-  height: 100%;
-  background: #050505;
-  overflow: hidden;
-  font-family: monospace;
+function triggerGlitch() {
+  if (glitching) return;
+  glitching = true;
+
+  k0bal.style.filter = "contrast(130%) brightness(120%)";
+  k0bal.style.transform += " scale(1.02)";
+
+  setTimeout(() => {
+    k0bal.style.filter = "";
+    glitching = false;
+  }, 80);
 }
 
-/* ===== SCREEN NOISE ===== */
-#noise {
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
-  opacity: 0.25;
-  pointer-events: none;
-  animation: noiseShift 0.2s infinite;
-}
-
-@keyframes noiseShift {
-  0% { transform: translate(0, 0); }
-  25% { transform: translate(-1px, 1px); }
-  50% { transform: translate(1px, -1px); }
-  75% { transform: translate(-1px, -1px); }
-  100% { transform: translate(1px, 1px); }
-}
-
-#k0bal {
-  position: relative;
-  width: 320px;
-  height: 360px;
-  filter: drop-shadow(0 0 40px rgba(255,0,0,0.15));
-}
-
-/* ===== K0BAL ENTITY ===== */
-#mask {
-  position: absolute;
-  inset: 0;
-  background: #050505;
-  clip-path: polygon(
-    50% 0%,
-    63% 5%, 78% 10%, 90% 22%,
-    96% 40%, 92% 60%, 80% 75%,
-    65% 90%, 50% 100%,
-    35% 90%, 20% 75%, 8% 60%,
-    4% 40%, 10% 22%, 22% 10%, 37% 5%
-  );
-  box-shadow:
-    inset 0 -40px 60px rgba(0,0,0,0.9),
-    inset 0 10px 30px rgba(255,255,255,0.02);
-}
-
-#mask::before,
-#mask::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  width: 40px;
-  height: 120px;
-  background: #040404;
-  clip-path: polygon(0 50%, 100% 0, 100% 100%);
-  opacity: 0.9;
-}
-
-#mask::before {
-  left: -32px;
-  transform: rotate(-15deg);
-}
-
-#mask::after {
-  right: -32px;
-  transform: rotate(195deg);
-}
-
-.eye-socket {
-  position: absolute;
-  top: 42%;
-  width: 54px;
-  height: 32px;
-  background: #000;
-  clip-path: polygon(
-    0% 0%, 100% 10%,
-    90% 100%, 10% 90%
-  );
-  overflow: hidden;
-}
-
-.eye-socket.left { left: 72px; transform: rotate(-6deg); }
-.eye-socket.right { right: 72px; transform: rotate(6deg); }
-
-.eye-glow {
-  position: absolute;
-  inset: -20%;
-  background: radial-gradient(
-    circle,
-    rgba(255,0,0,0.8) 0%,
-    rgba(120,0,0,0.6) 25%,
-    rgba(40,0,0,0.4) 45%,
-    rgba(0,0,0,0.95) 70%
-  );
-  animation: pulseEye 2.4s infinite ease-in-out;
-  mix-blend-mode: screen;
-}
-
-.eye-socket.right .eye-glow {
-  animation-delay: 0.6s;
-}
-
-@keyframes pulseEye {
-  0%   { transform: scale(0.85); opacity: 0.6; }
-  50%  { transform: scale(1.15); opacity: 1; }
-  100% { transform: scale(0.9); opacity: 0.7; }
-}
-
-
-/* ===== UNSETTLING MICRO-MOVEMENT ===== */
-#k0bal {
-  animation: idleTwitch 6s infinite;
-}
-
-@keyframes idleTwitch {
-  0%   { transform: translate(0, 0) rotate(0deg); }
-  92%  { transform: translate(0, 0) rotate(0deg); }
-  94%  { transform: translate(-1px, 1px) rotate(0.5deg); }
-  96%  { transform: translate(1px, -1px) rotate(-0.5deg); }
-  100% { transform: translate(0, 0) rotate(0deg); }
-}
-
-/* ===== SYSTEM LOG (HIDDEN) ===== */
-#system-log {
-  display: none;
-}
-
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.9) 100%);
-  pointer-events: none;
-}
-
+animate();
