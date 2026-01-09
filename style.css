@@ -1,7 +1,141 @@
-html, body {
+/* ===== GLOBAL RESET ===== */
+* {
   margin: 0;
   padding: 0;
-  background: black;
-  overflow: hidden;
-  cursor: none;
+  box-sizing: border-box;
+  cursor: crosshair;
 }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #050505;
+  overflow: hidden;
+  font-family: monospace;
+}
+
+/* ===== SCREEN NOISE ===== */
+#noise {
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+  opacity: 0.25;
+  pointer-events: none;
+  animation: noiseShift 0.2s infinite;
+}
+
+@keyframes noiseShift {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-1px, 1px); }
+  50% { transform: translate(1px, -1px); }
+  75% { transform: translate(-1px, -1px); }
+  100% { transform: translate(1px, 1px); }
+}
+
+/* ===== CONTAINMENT SPACE ===== */
+#containment {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== K0BAL ENTITY ===== */
+#k0bal {
+  position: relative;
+  width: 260px;
+  height: 300px;
+  background: radial-gradient(circle at top, #1a1a1a, #080808 70%);
+  border-radius: 12px;
+  box-shadow:
+    0 0 40px rgba(255, 0, 0, 0.15),
+    inset 0 0 25px rgba(0, 0, 0, 0.9);
+  transform-origin: center;
+}
+
+/* ===== CORE (BROKEN MASK CENTER) ===== */
+#core {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  width: 70px;
+  height: 70px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, #330000, #0a0000 70%);
+  border-radius: 50%;
+  box-shadow:
+    0 0 25px rgba(255, 0, 0, 0.5),
+    inset 0 0 15px rgba(0, 0, 0, 0.8);
+}
+
+/* ===== EYES ===== */
+.eye {
+  position: absolute;
+  top: 35%;
+  width: 28px;
+  height: 28px;
+  background: radial-gradient(circle, #ff0000 20%, #300000 60%, #000 75%);
+  border-radius: 50%;
+  box-shadow:
+    0 0 15px rgba(255, 0, 0, 0.6);
+}
+
+.eye.left {
+  left: 65px;
+}
+
+.eye.right {
+  right: 65px;
+}
+
+/* Subtle pulse so they feel alive */
+.eye::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 50%;
+}
+
+/* ===== CRACKS / DAMAGE ===== */
+.crack {
+  position: absolute;
+  background: linear-gradient(to bottom, #220000, transparent);
+  opacity: 0.6;
+}
+
+.crack.c1 {
+  width: 3px;
+  height: 90px;
+  top: 20px;
+  left: 120px;
+  transform: rotate(-15deg);
+}
+
+.crack.c2 {
+  width: 2px;
+  height: 70px;
+  bottom: 30px;
+  right: 90px;
+  transform: rotate(20deg);
+}
+
+/* ===== UNSETTLING MICRO-MOVEMENT ===== */
+#k0bal {
+  animation: idleTwitch 6s infinite;
+}
+
+@keyframes idleTwitch {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  92%  { transform: translate(0, 0) rotate(0deg); }
+  94%  { transform: translate(-1px, 1px) rotate(0.5deg); }
+  96%  { transform: translate(1px, -1px) rotate(-0.5deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+/* ===== SYSTEM LOG (HIDDEN) ===== */
+#system-log {
+  display: none;
+}
+
